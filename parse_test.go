@@ -30,6 +30,7 @@ func Test_Parse(t *testing.T) {
 		assert.Equal(t, "14525", log.RemoteAS)
 		assert.True(t, log.Up())
 		assert.Equal(t, "master", log.Table)
+		assert.True(t, result.Is(parselog.BGPLogType))
 	})
 	t.Run("json", func(t *testing.T) {
 		t.Parallel()
@@ -37,6 +38,15 @@ func Test_Parse(t *testing.T) {
 		var req *types.Request
 		err := json.Unmarshal(raw, &req)
 		require.NoError(t, err)
+		result, err := parselog.Parse(req)
+		require.NoError(t, err)
+		log, ok := result.(*types.ISISLog)
+		require.True(t, ok)
+		assert.Equal(t, req.Timestamp.Time, log.Timestamp)
+		assert.Equal(t, "er02.hnl01.as14525.net", log.Remote)
+		assert.Equal(t, "ae0.3613", log.Interface)
+		assert.True(t, log.Down())
+		assert.True(t, result.Is(parselog.ISISLogType))
 	})
 
 	t.Run("no matching platform", func(t *testing.T) {

@@ -23,8 +23,9 @@ var parseMap = map[string]types.Parser{
 }
 
 func ParseISIS(req *types.Request) (types.Log, error) {
+	msg := strings.TrimSpace(req.Message)
 	names := patternISIS.SubexpNames()
-	matches := patternISIS.FindStringSubmatch(req.Message)
+	matches := patternISIS.FindStringSubmatch(msg)
 
 	if len(matches) < isisMinLen || len(matches) > isisMaxLen {
 		log.Println(matches, len(matches))
@@ -35,14 +36,14 @@ func ParseISIS(req *types.Request) (types.Log, error) {
 	iRemote := patternISIS.SubexpIndex(names[2])
 	iIf := patternISIS.SubexpIndex(names[3])
 
-	state := matches[iState]
-	remote := matches[iRemote]
-	iface := matches[iIf]
+	state := strings.TrimSpace(matches[iState])
+	remote := strings.TrimSpace(matches[iRemote])
+	iface := strings.TrimSpace(matches[iIf])
 
 	iReason := patternISIS.SubexpIndex(names[5])
 	reason := ""
 	if len(names) == 6 && iReason != -1 {
-		reason = matches[iReason]
+		reason = strings.TrimSpace(matches[iReason])
 	}
 
 	l := &types.ISISLog{
@@ -61,8 +62,9 @@ func ParseISIS(req *types.Request) (types.Log, error) {
 }
 
 func ParseBGP(req *types.Request) (types.Log, error) {
+	msg := strings.TrimSpace(req.Message)
 	names := patternBGP.SubexpNames()
-	matches := patternBGP.FindStringSubmatch(req.Message)
+	matches := patternBGP.FindStringSubmatch(msg)
 	if len(matches) != bgpMinLen {
 		log.Println(matches, len(matches))
 		return nil, types.ErrIncompleteMatch
@@ -73,10 +75,10 @@ func ParseBGP(req *types.Request) (types.Log, error) {
 	iState := patternBGP.SubexpIndex(names[3])
 	iTable := patternBGP.SubexpIndex(names[4])
 
-	remote := matches[iRemote]
-	asn := matches[iASN]
-	state := matches[iState]
-	table := matches[iTable]
+	remote := strings.TrimSpace(matches[iRemote])
+	asn := strings.TrimSpace(matches[iASN])
+	state := strings.TrimSpace(matches[iState])
+	table := strings.TrimSpace(matches[iTable])
 
 	l := &types.BGPLog{
 		Base:      types.Base{Type: types.BGP, Original: req.Message, Extra: req.Extra},

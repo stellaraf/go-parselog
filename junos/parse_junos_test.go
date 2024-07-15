@@ -12,7 +12,7 @@ import (
 func Test_ParseISIS(t *testing.T) {
 	t.Run("up", func(t *testing.T) {
 		t.Parallel()
-		req := &types.Request{Message: "IS-IS new L2 adjacency to er02.hnl01.as14525.net on ae0.3613"}
+		req := &types.Request{Message: "IS-IS new L2 adjacency to er02.hnl01.as14525.net on ae0.3613 "}
 		result, err := junos.ParseISIS(req)
 		require.NoError(t, err)
 		attrs := result.Attrs()
