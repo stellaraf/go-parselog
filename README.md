@@ -10,6 +10,6 @@ Syslog parsing engine, likely very specific to Stellar's needs, which is to pars
 
 - Juniper Junos
 
-===
+---
 
-![License](https://img.shields.io/github/license/stellara/go-parselog?color=000&style=for-the-badge)
+![License](https://img.shields.io/github/license/stellaraf/go-parselog?color=000&style=for-the-badge)
