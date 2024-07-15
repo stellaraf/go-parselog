@@ -25,6 +25,4 @@ jobs:
               run: go test -race -coverprofile coverage.out -covermode=atomic
 
             - name: Upload Code Coverage Report
-              uses: codecov/codecov-action@v4.5.0
-              with:
-                  token: ${{ secrets.CODECOV_TOKEN }}
+              uses: coverallsapp/github-action@v2
