@@ -29,7 +29,7 @@ type Base struct {
 
 type Log interface {
 	Is(Log) bool
-	ID() (string, error)
+	ID() string
 	Attrs() map[string]any
 	Up() bool
 	Down() bool
@@ -70,8 +70,8 @@ func (l *ISISLog) Is(other Log) bool {
 	return other.LogType() == ISIS
 }
 
-func (l *ISISLog) ID() (string, error) {
-	return utils.HashFromStrings(l.Local, l.Remote, l.Interface)
+func (l *ISISLog) ID() string {
+	return utils.ShouldHashFromStrings(l.Local, l.Remote, l.Interface)
 }
 
 func (l *ISISLog) LogType() LogType {
@@ -102,8 +102,8 @@ func (l *BGPLog) LogType() LogType {
 	return l.Type
 }
 
-func (l *BGPLog) ID() (string, error) {
-	return utils.HashFromStrings(l.Local, l.Remote, l.RemoteAS, l.Table)
+func (l *BGPLog) ID() string {
+	return utils.ShouldHashFromStrings(l.Local, l.Remote, l.RemoteAS, l.Table)
 }
 
 func (l *BGPLog) Up() bool {

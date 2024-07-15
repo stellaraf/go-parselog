@@ -6,7 +6,6 @@ import (
 
 	"github.com/stellaraf/go-parselog/types"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Log(t *testing.T) {
@@ -45,16 +44,12 @@ func Test_Log(t *testing.T) {
 	t.Run("isis id", func(t *testing.T) {
 		t.Parallel()
 		log := &types.ISISLog{Base: types.Base{Type: types.ISIS}, Local: "local", Remote: "remote", Interface: "interface"}
-		id, err := log.ID()
-		require.NoError(t, err)
-		assert.NotEmpty(t, id)
+		assert.NotEmpty(t, log.ID())
 	})
 	t.Run("bgp id", func(t *testing.T) {
 		t.Parallel()
 		log := &types.BGPLog{Base: types.Base{Type: types.BGP}, Local: "local", Remote: "remote", RemoteAS: "remote_as", Table: "table"}
-		id, err := log.ID()
-		require.NoError(t, err)
-		assert.NotEmpty(t, id)
+		assert.NotEmpty(t, log.ID())
 	})
 	t.Run("isis attrs", func(t *testing.T) {
 		t.Parallel()

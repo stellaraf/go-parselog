@@ -3,7 +3,7 @@ module github.com/stellaraf/go-parselog
 go 1.22.4
 
 require (
-	github.com/stellaraf/go-utils v0.1.6
+	github.com/stellaraf/go-utils v0.1.7
 	github.com/stretchr/testify v1.9.0
 )
 

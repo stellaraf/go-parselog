@@ -4,6 +4,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stellaraf/go-utils v0.1.6 h1:3gwSW4+T+cNx5ThGVFgTnoulwd6voZRhtIan8JPduC4=
 github.com/stellaraf/go-utils v0.1.6/go.mod h1:j1NVjsRUigYa1D6ixIjaAgO3P3fXuUSMuIUh6Gp1bik=
+github.com/stellaraf/go-utils v0.1.7 h1:iE466HgNpuXeCsoMd32r8LFz9Us+tlc1woFF676UDYY=
+github.com/stellaraf/go-utils v0.1.7/go.mod h1:j1NVjsRUigYa1D6ixIjaAgO3P3fXuUSMuIUh6Gp1bik=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
