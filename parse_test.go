@@ -33,7 +33,7 @@ func Test_Parse(t *testing.T) {
 	})
 	t.Run("json", func(t *testing.T) {
 		t.Parallel()
-		raw := []byte(`{"message":"IS-IS lost L2 adjacency to er02.hnl01.as14525.net on ae0.3613, reason: Aged out ","platform":"junos","source":"er01.gvl01.as14525.net","timestamp":"2024-07-13 21:57:59"}`)
+		raw := []byte(`{"message":"IS-IS lost L2 adjacency to er02.hnl01.as14525.net on ae0.3613, reason: Aged out ","platform":"junos","source":"er01.gvl01.as14525.net","timestamp":"2024-07-13 21:57:59","extra":{"key":"value"}}`)
 		var req *types.Request
 		err := json.Unmarshal(raw, &req)
 		require.NoError(t, err)

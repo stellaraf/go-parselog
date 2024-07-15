@@ -46,7 +46,7 @@ func ParseISIS(req *types.Request) (types.Log, error) {
 	}
 
 	l := &types.ISISLog{
-		Base:      types.Base{Type: types.ISIS, Original: req.Message},
+		Base:      types.Base{Type: types.ISIS, Original: req.Message, Extra: req.Extra},
 		Local:     req.Source,
 		Timestamp: req.Timestamp.Time,
 		Remote:    remote,
@@ -79,7 +79,7 @@ func ParseBGP(req *types.Request) (types.Log, error) {
 	table := matches[iTable]
 
 	l := &types.BGPLog{
-		Base:      types.Base{Type: types.BGP, Original: req.Message},
+		Base:      types.Base{Type: types.BGP, Original: req.Message, Extra: req.Extra},
 		Timestamp: req.Timestamp.Time,
 		Local:     req.Source,
 		Remote:    remote,

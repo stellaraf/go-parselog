@@ -25,8 +25,9 @@ func (t *Timestamp) UnmarshalJSON(b []byte) error {
 }
 
 type Request struct {
-	Message   string    `json:"message"`
-	Platform  string    `json:"platform"`
-	Source    string    `json:"source"`
-	Timestamp Timestamp `json:"timestamp"`
+	Message   string         `json:"message"`
+	Platform  string         `json:"platform"`
+	Source    string         `json:"source"`
+	Timestamp Timestamp      `json:"timestamp"`
+	Extra     map[string]any `json:"extra"`
 }

@@ -102,4 +102,12 @@ func Test_Parse(t *testing.T) {
 		assert.ErrorIs(t, err, types.ErrNoMatchingParser)
 		assert.Nil(t, result)
 	})
+	t.Run("with extra", func(t *testing.T) {
+		req := &types.Request{Message: "BGP peer 2604:c0c0:3000::13e2 (Internal AS 14525) changed state from OpenConfirm to Established (event RecvKeepAlive) (instance master)", Extra: map[string]any{"key": "value"}}
+		result, err := junos.Parse(req)
+		require.NoError(t, err)
+		log, ok := result.(*types.BGPLog)
+		require.True(t, ok)
+		assert.Equal(t, map[string]any{"key": "value"}, log.Extra)
+	})
 }
