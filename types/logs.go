@@ -21,6 +21,11 @@ const (
 	BGP
 )
 
+var (
+	ISISLogType = &ISISLog{Base: Base{Type: ISIS}}
+	BGPLogType  = &BGPLog{Base: Base{Type: BGP}}
+)
+
 type Base struct {
 	Type     LogType        `json:"type"`
 	Extra    map[string]any `json:"extra"`

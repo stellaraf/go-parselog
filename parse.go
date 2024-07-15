@@ -22,6 +22,8 @@ var (
 	BGP                   = types.BGP
 	UP                    = types.UP
 	DOWN                  = types.DOWN
+	ISISLogType           = &types.ISISLog{Base: types.Base{Type: ISIS}}
+	BGPLogType            = &types.BGPLog{Base: types.Base{Type: BGP}}
 )
 
 var parseMap = map[string]types.Parser{

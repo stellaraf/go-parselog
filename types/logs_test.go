@@ -11,15 +11,15 @@ import (
 func Test_Log(t *testing.T) {
 	t.Run("isis is", func(t *testing.T) {
 		t.Parallel()
-		log1 := &types.ISISLog{Base: types.Base{Type: types.ISIS}}
-		log2 := &types.ISISLog{Base: types.Base{Type: types.ISIS}}
-		assert.True(t, log1.Is(log2))
+		log := &types.ISISLog{Base: types.Base{Type: types.ISIS}}
+		assert.True(t, log.Is(types.ISISLogType))
+		assert.False(t, log.Is(types.BGPLogType))
 	})
 	t.Run("bgp is", func(t *testing.T) {
 		t.Parallel()
-		log1 := &types.BGPLog{Base: types.Base{Type: types.BGP}}
-		log2 := &types.BGPLog{Base: types.Base{Type: types.BGP}}
-		assert.True(t, log1.Is(log2))
+		log := &types.BGPLog{Base: types.Base{Type: types.BGP}}
+		assert.True(t, log.Is(types.BGPLogType))
+		assert.False(t, log.Is(types.ISISLogType))
 	})
 	t.Run("isis up", func(t *testing.T) {
 		t.Parallel()
