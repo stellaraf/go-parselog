@@ -19,10 +19,9 @@ jobs:
                   go-version: ${{ matrix.go-version }}
 
             - name: Test
-              run: go test ./... -v
-
-            - name: Code Coverage Report
-              run: go test -race -coverprofile coverage.out -covermode=atomic
+              run: go test ./... -v --coverprofile=cover.out
 
             - name: Upload Code Coverage Report
               uses: coverallsapp/github-action@v2
+              with:
+                  file: cover.out
