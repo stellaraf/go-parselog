@@ -16,8 +16,8 @@ func Test_Parse(t *testing.T) {
 		t.Parallel()
 		now := time.Now()
 		req := &types.Request{
-			Message:   "BGP peer 2604:c0c0:3000::13e2 (Internal AS 14525) changed state from OpenConfirm to Established (event RecvKeepAlive) (instance master)",
-			Timestamp: types.Timestamp{Time: now},
+			Messages:  []string{"BGP peer 2604:c0c0:3000::13e2 (Internal AS 14525) changed state from OpenConfirm to Established (event RecvKeepAlive) (instance master)"},
+			Timestamp: now,
 			Platform:  "junos",
 			Source:    "er01.gvl01.as14525.net",
 		}
@@ -25,7 +25,7 @@ func Test_Parse(t *testing.T) {
 		require.NoError(t, err)
 		log, ok := result.(*types.BGPLog)
 		require.True(t, ok)
-		assert.Equal(t, req.Timestamp.Time, log.Timestamp)
+		assert.Equal(t, req.Timestamp, log.Timestamp)
 		assert.Equal(t, "2604:c0c0:3000::13e2", log.Remote)
 		assert.Equal(t, "14525", log.RemoteAS)
 		assert.True(t, log.Up())
@@ -42,7 +42,24 @@ func Test_Parse(t *testing.T) {
 		require.NoError(t, err)
 		log, ok := result.(*types.ISISLog)
 		require.True(t, ok)
-		assert.Equal(t, req.Timestamp.Time, log.Timestamp)
+		assert.Equal(t, req.Timestamp, log.Timestamp)
+		assert.Equal(t, "er02.hnl01.as14525.net", log.Remote)
+		assert.Equal(t, "ae0.3613", log.Interface)
+		assert.True(t, log.Down())
+		assert.True(t, result.Is(parselog.ISISLogType))
+	})
+
+	t.Run("json multiple logs", func(t *testing.T) {
+		t.Parallel()
+		raw := []byte(`{"message":"IS-IS lost L2 adjacency to er02.hnl01.as14525.net on ae0.3613, reason: Aged out __IS-IS lost L2 adjacency to er02.hnl01.as14525.net on ae0.3613, reason: Aged out ","platform":"junos","source":"er01.gvl01.as14525.net","timestamp":"2024-07-13 21:57:59","extra":{"key":"value"}}`)
+		var req *types.Request
+		err := json.Unmarshal(raw, &req)
+		require.NoError(t, err)
+		result, err := parselog.Parse(req)
+		require.NoError(t, err)
+		log, ok := result.(*types.ISISLog)
+		require.True(t, ok)
+		assert.Equal(t, req.Timestamp, log.Timestamp)
 		assert.Equal(t, "er02.hnl01.as14525.net", log.Remote)
 		assert.Equal(t, "ae0.3613", log.Interface)
 		assert.True(t, log.Down())

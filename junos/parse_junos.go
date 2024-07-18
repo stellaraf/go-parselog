@@ -23,7 +23,7 @@ var parseMap = map[string]types.Parser{
 }
 
 func ParseISIS(req *types.Request) (types.Log, error) {
-	msg := strings.TrimSpace(req.Message)
+	msg := req.Messages[0]
 	names := patternISIS.SubexpNames()
 	matches := patternISIS.FindStringSubmatch(msg)
 
@@ -47,9 +47,9 @@ func ParseISIS(req *types.Request) (types.Log, error) {
 	}
 
 	l := &types.ISISLog{
-		Base:      types.Base{Type: types.ISIS, Original: req.Message, Extra: req.Extra},
+		Base:      types.Base{Type: types.ISIS, Original: strings.Join(req.Messages, "__"), Extra: req.Extra},
 		Local:     req.Source,
-		Timestamp: req.Timestamp.Time,
+		Timestamp: req.Timestamp,
 		Remote:    remote,
 		Interface: iface,
 		Reason:    reason,
@@ -62,7 +62,7 @@ func ParseISIS(req *types.Request) (types.Log, error) {
 }
 
 func ParseBGP(req *types.Request) (types.Log, error) {
-	msg := strings.TrimSpace(req.Message)
+	msg := req.Messages[0]
 	names := patternBGP.SubexpNames()
 	matches := patternBGP.FindStringSubmatch(msg)
 	if len(matches) != bgpMinLen {
@@ -81,8 +81,8 @@ func ParseBGP(req *types.Request) (types.Log, error) {
 	table := strings.TrimSpace(matches[iTable])
 
 	l := &types.BGPLog{
-		Base:      types.Base{Type: types.BGP, Original: req.Message, Extra: req.Extra},
-		Timestamp: req.Timestamp.Time,
+		Base:      types.Base{Type: types.BGP, Original: strings.Join(req.Messages, "__"), Extra: req.Extra},
+		Timestamp: req.Timestamp,
 		Local:     req.Source,
 		Remote:    remote,
 		State:     types.DOWN,
@@ -97,8 +97,10 @@ func ParseBGP(req *types.Request) (types.Log, error) {
 
 func Parse(req *types.Request) (types.Log, error) {
 	for prefix, parser := range parseMap {
-		if strings.HasPrefix(req.Message, prefix) {
-			return parser(req)
+		for _, msg := range req.Messages {
+			if strings.HasPrefix(msg, prefix) {
+				return parser(req)
+			}
 		}
 	}
 	return nil, types.ErrNoMatchingParser
