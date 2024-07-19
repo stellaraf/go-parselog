@@ -30,7 +30,7 @@ var parseMap = map[string]types.Parser{
 	"junos": junos.Parse,
 }
 
-func Parse(request *Request) (Log, error) {
+func Parse(request *Request) ([]Log, error) {
 	parser, ok := parseMap[request.Platform]
 	if !ok {
 		return nil, types.ErrNoMatchingPlatform

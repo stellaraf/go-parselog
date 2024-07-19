@@ -1,6 +1,7 @@
 package types
 
 import (
+	"sort"
 	"time"
 
 	"github.com/stellaraf/go-utils"
@@ -9,7 +10,7 @@ import (
 type State uint
 type LogType uint
 
-type Parser func(*Request) (Log, error)
+type Parser func(*Request) ([]Log, error)
 
 const (
 	UP State = iota + 1
@@ -76,7 +77,9 @@ func (l *ISISLog) Is(other Log) bool {
 }
 
 func (l *ISISLog) ID() string {
-	return utils.ShouldHashFromStrings(l.Local, l.Remote, l.Interface)
+	vars := []string{l.Local, l.Remote, l.Interface}
+	sort.Strings(vars)
+	return utils.ShouldHashFromStrings(vars...)
 }
 
 func (l *ISISLog) LogType() LogType {
@@ -108,7 +111,9 @@ func (l *BGPLog) LogType() LogType {
 }
 
 func (l *BGPLog) ID() string {
-	return utils.ShouldHashFromStrings(l.Local, l.Remote, l.RemoteAS, l.Table)
+	vars := []string{l.Local, l.Remote, l.RemoteAS, l.Table}
+	sort.Strings(vars)
+	return utils.ShouldHashFromStrings(vars...)
 }
 
 func (l *BGPLog) Up() bool {

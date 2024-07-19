@@ -69,7 +69,7 @@ func (req *Request) UnmarshalJSON(b []byte) error {
 	}
 	msgs := strings.Split(msg, "__")
 	for i, msg := range msgs {
-		msgs[i] = strings.TrimSpace(msg)
+		msgs[i] = strings.Trim(strings.TrimSpace(msg), "_")
 	}
 	req.Messages = msgs
 	req.Platform = platform

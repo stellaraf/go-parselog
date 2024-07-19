@@ -1,14 +1,14 @@
 package junos
 
 import (
-	"log"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/stellaraf/go-parselog/types"
 )
 
-var patternISIS = regexp.MustCompile(`^IS-IS (?P<state>.+) .+ to (?P<remote>.+) on (?P<iface>[\w\.]+)(, reason: (?P<reason>.+))?$`)
+var patternISIS = regexp.MustCompile(`^IS-IS (?P<state>.+) .+ to (?P<remote>.+) on (?P<iface>[\S\.]+)(, reason: (?P<reason>.+))?$`)
 var patternBGP = regexp.MustCompile(`^BGP peer (?P<remote>.+) \(.+AS (?P<asn>\d+).+changed state from \S+ to (?P<state>\S+).*\(instance (?P<instance>\S+)\).*$`)
 
 const (
@@ -17,18 +17,18 @@ const (
 	isisMaxLen int = 6
 )
 
-var parseMap = map[string]types.Parser{
+type Parser func(string, string, time.Time, map[string]any) (types.Log, error)
+
+var parseMap = map[string]Parser{
 	"IS-IS":    ParseISIS,
 	"BGP peer": ParseBGP,
 }
 
-func ParseISIS(req *types.Request) (types.Log, error) {
-	msg := req.Messages[0]
+func ParseISIS(msg, src string, ts time.Time, extra map[string]any) (types.Log, error) {
 	names := patternISIS.SubexpNames()
 	matches := patternISIS.FindStringSubmatch(msg)
 
 	if len(matches) < isisMinLen || len(matches) > isisMaxLen {
-		log.Println(matches, len(matches))
 		return nil, types.ErrIncompleteMatch
 	}
 
@@ -47,9 +47,9 @@ func ParseISIS(req *types.Request) (types.Log, error) {
 	}
 
 	l := &types.ISISLog{
-		Base:      types.Base{Type: types.ISIS, Original: strings.Join(req.Messages, "__"), Extra: req.Extra},
-		Local:     req.Source,
-		Timestamp: req.Timestamp,
+		Base:      types.Base{Type: types.ISIS, Original: msg, Extra: extra},
+		Local:     src,
+		Timestamp: ts,
 		Remote:    remote,
 		Interface: iface,
 		Reason:    reason,
@@ -61,12 +61,10 @@ func ParseISIS(req *types.Request) (types.Log, error) {
 	return l, nil
 }
 
-func ParseBGP(req *types.Request) (types.Log, error) {
-	msg := req.Messages[0]
+func ParseBGP(msg, src string, ts time.Time, extra map[string]any) (types.Log, error) {
 	names := patternBGP.SubexpNames()
 	matches := patternBGP.FindStringSubmatch(msg)
 	if len(matches) != bgpMinLen {
-		log.Println(matches, len(matches))
 		return nil, types.ErrIncompleteMatch
 	}
 
@@ -81,9 +79,9 @@ func ParseBGP(req *types.Request) (types.Log, error) {
 	table := strings.TrimSpace(matches[iTable])
 
 	l := &types.BGPLog{
-		Base:      types.Base{Type: types.BGP, Original: strings.Join(req.Messages, "__"), Extra: req.Extra},
-		Timestamp: req.Timestamp,
-		Local:     req.Source,
+		Base:      types.Base{Type: types.BGP, Original: msg, Extra: extra},
+		Timestamp: ts,
+		Local:     src,
 		Remote:    remote,
 		State:     types.DOWN,
 		RemoteAS:  asn,
@@ -95,13 +93,22 @@ func ParseBGP(req *types.Request) (types.Log, error) {
 	return l, nil
 }
 
-func Parse(req *types.Request) (types.Log, error) {
-	for prefix, parser := range parseMap {
-		for _, msg := range req.Messages {
+func Parse(req *types.Request) ([]types.Log, error) {
+	logs := make([]types.Log, 0, len(req.Messages))
+	for _, msg := range req.Messages {
+		for prefix, parser := range parseMap {
 			if strings.HasPrefix(msg, prefix) {
-				return parser(req)
+				l, err := parser(msg, req.Source, req.Timestamp, req.Extra)
+				if err != nil {
+					return nil, err
+				}
+				logs = append(logs, l)
 			}
 		}
+	}
+
+	if len(logs) != 0 {
+		return logs, nil
 	}
 	return nil, types.ErrNoMatchingParser
 }
