@@ -1,6 +1,7 @@
 package parselog
 
 import (
+	"github.com/stellaraf/go-parselog/arista"
 	"github.com/stellaraf/go-parselog/junos"
 	"github.com/stellaraf/go-parselog/types"
 )
@@ -27,7 +28,8 @@ var (
 )
 
 var parseMap = map[string]types.Parser{
-	"junos": junos.Parse,
+	"junos":      junos.Parse,
+	"arista_eos": arista.Parse,
 }
 
 func Parse(request *Request) ([]Log, error) {
