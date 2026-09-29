@@ -8,7 +8,7 @@ jobs:
         go-version:
         - 1.22.x
         os: [ubuntu-latest]
-    runs-on: codebuild-stellaraf-actions-public-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -23,30 +23,13 @@ jobs:
       id: go-cache
       run: |
         echo "version=$(go env GOVERSION)" >> "$GITHUB_OUTPUT"
-    - name: Export temporary AWS cache credentials
-      shell: bash
-      run: |
-        python3 - <<'PYTHON'
-        import json, os, subprocess
-        credentials = json.loads(subprocess.check_output(['aws', 'configure', 'export-credentials', '--format', 'process']))
-        with open(os.environ['GITHUB_ENV'], 'a') as output:
-            for source, target in [('AccessKeyId', 'AWS_ACCESS_KEY_ID'), ('SecretAccessKey', 'AWS_SECRET_ACCESS_KEY'), ('SessionToken', 'AWS_SESSION_TOKEN')]:
-                value = credentials[source]
-                if not value or '\n' in value or '\r' in value:
-                    raise RuntimeError('Invalid temporary credential value')
-                print('::add-mask::' + value)
-                output.write(target + '=' + value + '\n')
-        PYTHON
-    - name: Restore Go dependencies and build cache from S3
-      uses: tespkg/actions-cache@e07e2d4953dc8c020d447363e5064e36d04f3cf9
+    - name: Restore Go dependencies and build cache
+      uses: actions/cache@v4
       with:
-        region: us-west-1
-        bucket: stellaraf-public-ci-961341522852-us-west-1
         path: |
           /tmp/stellar-go/pkg/mod
           /tmp/stellar-go-build
         key: cache/${{ github.repository }}/${{ github.ref }}/go/${{ runner.os }}/${{ runner.arch }}/${{ steps.go-cache.outputs.version }}/${{ hashFiles('**/go.sum') }}
-        use-fallback: false
     - name: Test
       run: go test ./... -v --coverprofile=cover.out
 
